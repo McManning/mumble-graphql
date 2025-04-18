@@ -1,0 +1,54 @@
+services:
+  mumble:
+    image: "mumblevoip/mumble-server:latest"
+    container_name: mumble
+    restart: unless-stopped
+    ports:
+      - "64739:64738"
+      - "64739:64738/udp"
+      - "6502:6502" # ICE
+    environment:
+      - "MUMBLE_SUPERUSER_PASSWORD=superuserpw"
+      - 'MUMBLE_CONFIG_ice="tcp -h 0.0.0.0 -p 6502"'
+      - "MUMBLE_CONFIG_icesecretread=readpw"
+      - "MUMBLE_CONFIG_icesecretwrite=writepw"
+      - "MUMBLE_CONFIG_registerName=Test Server"
+      # - "MUMBLE_CONFIG_serverpassword=serverpw"
+      - MUMBLE_CONFIG_bandwidth=558000
+      - MUMBLE_CONFIG_users=20
+      - "MUMBLE_CONFIG_welcometext=Test server"
+      - MUMBLE_CONFIG_allowhtml=true
+      - MUMBLE_CONFIG_textmessagelength=0
+      - MUMBLE_CONFIG_imagemessagelength=0
+      # - MUMBLE_CONFIG_sslCert=/etc/letsencrypt/fullchain.pem
+      # - MUMBLE_CONFIG_sslKey=/etc/letsencrypt/privkey.pem
+      # - MUMBLE_CONFIG_sslCert=/etc/letsencrypt/live/mumble.example.com/fullchain.pem
+      # - MUMBLE_CONFIG_sslKey=/etc/letsencrypt/live/mumble.example.com/privkey.pem
+    logging:
+      driver: json-file
+      options:
+        max-file: "5"
+        max-size: 10m
+    # healthcheck:
+    #   test: ["CMD", "bash", "-c", "echo -n '' > /dev/tcp/127.0.0.1/64738"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+    volumes:
+      - ./mumble-data:/data
+      # - /etc/letsencrypt:/etc/letsencrypt
+  mumble-graphql:
+    build: .
+    container_name: mumble-graphql
+    # command: ["sh", "-c", "while true; do sleep 1; done"]
+    # command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      - TZ=America/New_York
+      - ICE_HOST=mumble
+      - ICE_PORT=6502
+      - ICE_SECRET=writepw
+    volumes:
+      - ./src:/app
