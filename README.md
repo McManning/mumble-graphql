@@ -2,7 +2,7 @@
 
 ## API
 
-Note that there is no authentication implemented for the GraphQL API. Do not expose to it to the public.
+Note that there is no authentication implemented for the GraphQL API. Use a revproxy. 
 
 ### Queries
 
