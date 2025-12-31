@@ -1,28 +1,17 @@
-FROM python:3.12-alpine
+FROM python:3.13-slim
 
 LABEL maintainer="Chase McManning <cmcmanning@gmail.com>"
 
 WORKDIR /app
 
-# deps required for building zeroc-ice
-RUN apk add --no-cache \
-    libstdc++ \
-    make \
-    gcc \
-    g++ \
-    python3-dev \
-    py3-setuptools \
-    openssl-dev \
-    bzip2-dev \
-    tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
-    libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
-    libxcb-dev libpng-dev
+RUN apt-get update && apt-get install -y python3-zeroc-ice
 
-# Building the wheel for this takes forever. So it sits on its own.
-RUN pip install zeroc-ice==3.7.10.1
+# Install Ice Python bindings to the site-packages for Python 3.13
+RUN ln -s /usr/lib/python3/dist-packages/Ice /usr/local/lib/python3.13/site-packages/Ice && \
+    ln -s /usr/lib/python3/dist-packages/IcePy.cpython-313-x86_64-linux-gnu.so /usr/local/lib/python3.13/site-packages/IcePy.cpython-313-x86_64-linux-gnu.so
 
 COPY ./requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY ./src /app
 
 EXPOSE 80
