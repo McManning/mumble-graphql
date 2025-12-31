@@ -16,7 +16,7 @@ def texture_to_data_uri(texture) -> str:
     # Murmur gives us the *original* image data, so we want
     # to try to decode that, crush it to an avatar size, and encode
     image = Image.open(BytesIO(texture))
-    image.thumbnail((128, 128), Image.ANTIALIAS)
+    image.thumbnail((128, 128))
 
     # Convert image to PNG string
     buffered = BytesIO()
