@@ -23,7 +23,7 @@ RUN pip install zeroc-ice==3.7.10.1
 
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
-COPY . /app
+COPY ./src /app
 
 EXPOSE 80
 CMD ["fastapi", "run", "app.py", "--port", "80", "--proxy-headers"]
