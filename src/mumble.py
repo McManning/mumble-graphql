@@ -133,6 +133,8 @@ class MumbleClient:
             props = Ice.createProperties()
             props.setProperty('Ice.ImplicitContext', 'Shared')
             props.setProperty('Ice.Default.EncodingVersion', '1.0')
+            props.setProperty('Ice.MessageSizeMax', os.environ.get(
+                'ICE_MESSAGE_SIZE_MAX', '65536'))
 
             idd = Ice.InitializationData()
             idd.properties = props
